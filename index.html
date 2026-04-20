@@ -1,277 +1,636 @@
-      radial-gradient(ellipse at 80% 20%, #0a1a3e 0%, transparent 55%),
-      radial-gradient(ellipse at 60% 80%, #0d0a2e 0%, transparent 50%),
-      #000;
-    z-index: 0;
-  }
-  /* Starfield via box-shadow trick */
-  #stars { position: fixed; inset: 0; z-index: 0; }
-  #stars::before, #stars::after {
-    content: '';
-    position: absolute;
-    width: 2px; height: 2px;
-    border-radius: 50%;
-    background: transparent;
-    /* 80 stars each layer */
-    box-shadow:
-      12px 45px #fff,  87px 234px #fff, 145px 67px #ddd,  300px 190px #fff,
-      420px 310px #ccc, 560px 55px #fff, 680px 420px #ddd, 750px 130px #fff,
-      830px 280px #ccc, 920px 370px #fff, 50px 500px #ddd,  200px 600px #fff,
-      370px 450px #ccc, 490px 580px #fff, 620px 490px #ddd, 780px 560px #fff,
-      100px 150px #ddd, 250px 380px #fff, 400px 220px #ccc, 550px 340px #fff,
-      700px 90px #ddd,  850px 450px #fff, 960px 200px #ccc, 30px 700px #fff,
-      170px 750px #ddd, 320px 680px #fff, 470px 730px #ccc, 600px 650px #fff,
-      740px 720px #ddd, 890px 680px #fff, 130px 820px #ccc, 280px 880px #fff,
-      430px 830px #ddd, 580px 790px #fff, 730px 860px #ccc, 880px 820px #fff,
-      55px 320px #ddd,  210px 270px #fff, 360px 130px #ccc, 510px 400px #fff,
-      660px 260px #ddd, 810px 170px #fff, 940px 480px #ccc, 75px 610px #fff,
-      225px 540px #ddd, 375px 570px #fff, 525px 510px #ccc, 675px 590px #fff,
-      825px 530px #ddd, 975px 610px #fff, 45px 900px #ccc,  195px 940px #fff,
-      345px 910px #ddd, 495px 950px #fff, 645px 920px #ccc, 795px 960px #fff,
-      945px 900px #ddd, 115px 100px #fff, 265px 50px #ccc,  415px 170px #fff,
-      565px 80px #ddd,  715px 200px #fff, 865px 120px #ccc, 985px 260px #fff,
-      20px 400px #ddd,  170px 460px #fff, 330px 390px #ccc, 480px 440px #fff,
-      630px 360px #ddd, 790px 410px #fff, 950px 350px #ccc, 105px 690px #fff,
-      255px 740px #ddd, 405px 660px #fff, 555px 710px #ccc, 705px 670px #fff;
-    animation: twinkle 4s infinite alternate;
-  }
-  #stars::after {
-    width: 1px; height: 1px;
-    box-shadow:
-      80px 120px #aaa,  230px 80px #bbb,  380px 200px #aaa, 530px 140px #bbb,
-      680px 60px #aaa,  820px 240px #bbb,  965px 100px #aaa, 35px 360px #bbb,
-      185px 320px #aaa, 335px 420px #bbb,  485px 270px #aaa, 635px 380px #bbb,
-      785px 330px #aaa, 935px 410px #bbb,  60px 560px #aaa,  210px 620px #bbb,
-      360px 500px #aaa, 510px 640px #bbb,  660px 570px #aaa, 810px 590px #bbb,
-      960px 540px #aaa, 40px 780px #bbb,   190px 840px #aaa, 340px 760px #bbb,
-      490px 800px #aaa, 640px 770px #bbb,  790px 830px #aaa, 940px 790px #bbb,
-      110px 30px #aaa,  260px 160px #bbb,  410px 20px #aaa,  560px 100px #bbb,
-      710px 180px #aaa, 860px 40px #bbb,   15px 240px #aaa,  165px 200px #bbb,
-      315px 280px #aaa, 465px 160px #bbb,  615px 300px #aaa, 765px 220px #bbb;
-    animation-delay: 2s;
-  }
-  @keyframes twinkle { from { opacity: 0.4 } to { opacity: 1 } }
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>❤️ Galaxy Clash</title>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-  /* ── Layout ── */
-  #ui {
-    position: relative; z-index: 10;
-    width: 100%; max-width: 520px;
-    padding: 8px 12px 0;
-    display: flex; flex-direction: column; gap: 6px;
-  }
+html, body {
+  width: 100%; height: 100%;
+  background: #000;
+  color: #fff;
+  font-family: 'Segoe UI', sans-serif;
+  overflow: hidden;
+  touch-action: none;
+  user-select: none;
+}
 
-  /* ── Setup screen ── */
-  #setup {
-    position: fixed; inset: 0; z-index: 50;
-    display: flex; flex-direction: column;
-    align-items: center; justify-content: center;
-    gap: 18px;
-    background: rgba(0,0,0,0.85);
-    backdrop-filter: blur(6px);
-  }
-  #setup h1 {
-    font-size: clamp(1.8rem, 6vw, 2.8rem);
-    letter-spacing: 0.05em;
-    background: linear-gradient(135deg, #ff4d6d, #a855f7, #38bdf8);
-    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-    text-align: center;
-  }
-  #setup p { color: #aaa; font-size: 0.85rem; text-align: center; max-width: 280px; }
+/* Galaxy background */
+#bg {
+  position: fixed; inset: 0; z-index: 0;
+  background:
+    radial-gradient(ellipse at 20% 50%, #1a0533 0%, transparent 60%),
+    radial-gradient(ellipse at 80% 20%, #0a1a3e 0%, transparent 55%),
+    radial-gradient(ellipse at 60% 80%, #0d0a2e 0%, transparent 50%),
+    #000;
+}
+#stars { position: fixed; inset: 0; z-index: 0; overflow: hidden; }
+#stars::before, #stars::after {
+  content: ''; position: absolute;
+  width: 2px; height: 2px; border-radius: 50%; background: transparent;
+  box-shadow:
+    12px 45px #fff, 87px 234px #fff, 145px 67px #ddd, 300px 190px #fff,
+    420px 310px #ccc, 560px 55px #fff, 680px 420px #ddd, 750px 130px #fff,
+    830px 280px #ccc, 920px 370px #fff, 50px 500px #ddd, 200px 600px #fff,
+    370px 450px #ccc, 490px 580px #fff, 620px 490px #ddd, 780px 560px #fff,
+    100px 150px #ddd, 250px 380px #fff, 400px 220px #ccc, 550px 340px #fff,
+    700px 90px #ddd, 850px 450px #fff, 960px 200px #ccc, 30px 700px #fff,
+    170px 750px #ddd, 320px 680px #fff, 470px 730px #ccc, 600px 650px #fff,
+    740px 720px #ddd, 890px 680px #fff, 130px 820px #ccc, 280px 880px #fff,
+    55px 320px #ddd, 210px 270px #fff, 360px 130px #ccc, 510px 400px #fff,
+    660px 260px #ddd, 810px 170px #fff, 940px 480px #ccc, 75px 610px #fff,
+    115px 100px #fff, 265px 50px #ccc, 415px 170px #fff, 565px 80px #ddd,
+    715px 200px #fff, 865px 120px #ccc, 985px 260px #fff, 345px 910px #ddd;
+  animation: twinkle 4s infinite alternate;
+}
+#stars::after {
+  width: 1px; height: 1px; animation-delay: 2s;
+  box-shadow:
+    80px 120px #aaa, 230px 80px #bbb, 380px 200px #aaa, 530px 140px #bbb,
+    680px 60px #aaa, 820px 240px #bbb, 965px 100px #aaa, 35px 360px #bbb,
+    185px 320px #aaa, 335px 420px #bbb, 485px 270px #aaa, 635px 380px #bbb,
+    785px 330px #aaa, 935px 410px #bbb, 60px 560px #aaa, 210px 620px #bbb;
+}
+@keyframes twinkle { from { opacity: 0.3 } to { opacity: 1 } }
 
-  .img-picker {
-    display: flex; flex-direction: column; align-items: center; gap: 8px;
-    width: 220px;
-  }
-  .img-picker label {
-    font-size: 0.75rem; color: #aaa; text-transform: uppercase; letter-spacing: 0.1em;
-  }
-  .pick-btn {
-    width: 100%; padding: 10px;
-    background: var(--btn-bg);
-    border: 1px solid var(--btn-border);
-    border-radius: 10px;
-    color: #fff; font-size: 0.85rem; cursor: pointer;
-    transition: background 0.2s;
-    display: flex; align-items: center; justify-content: center; gap: 8px;
-  }
-  .pick-btn:hover { background: rgba(255,255,255,0.18); }
-  .preview {
-    width: 70px; height: 70px; border-radius: 12px;
-    object-fit: cover;
-    border: 2px solid var(--btn-border);
-    display: none;
-  }
-  .preview.show { display: block; }
+/* Setup screen */
+#setup {
+  position: fixed; inset: 0; z-index: 50;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center; gap: 20px;
+  background: rgba(0,0,0,0.88);
+  backdrop-filter: blur(8px);
+}
+#setup h1 {
+  font-size: clamp(1.8rem, 7vw, 3rem);
+  background: linear-gradient(135deg, #ff4d6d, #a855f7, #38bdf8);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  text-align: center;
+}
+#setup p { color: #999; font-size: 0.82rem; text-align: center; max-width: 260px; }
 
-  #startBtn {
-    padding: 14px 40px;
-    background: linear-gradient(135deg, #ff4d6d, #a855f7);
-    border: none; border-radius: 14px;
-    color: #fff; font-size: 1rem; font-weight: 700;
-    cursor: pointer; letter-spacing: 0.05em;
-    box-shadow: 0 4px 20px rgba(168,85,247,0.4);
-    transition: transform 0.1s, box-shadow 0.2s;
-  }
-  #startBtn:hover { transform: scale(1.04); box-shadow: 0 6px 28px rgba(168,85,247,0.55); }
+.pickers { display: flex; gap: 20px; flex-wrap: wrap; justify-content: center; }
+.picker { display: flex; flex-direction: column; align-items: center; gap: 8px; }
+.picker span { font-size: 0.7rem; color: #aaa; text-transform: uppercase; letter-spacing: 0.1em; }
 
-  /* ── HUD ── */
-  #hud {
-    display: flex; justify-content: space-between; align-items: center;
-    gap: 8px;
-  }
-  .stat {
-    flex: 1;
-    background: rgba(255,255,255,0.06);
-    border: 1px solid rgba(255,255,255,0.1);
-    border-radius: 10px;
-    padding: 6px 10px;
-    display: flex; flex-direction: column; gap: 3px;
-  }
-  .stat-label { font-size: 0.6rem; text-transform: uppercase; letter-spacing: 0.12em; color: #888; }
-  .bar-wrap {
-    height: 8px; background: rgba(255,255,255,0.08); border-radius: 4px; overflow: hidden;
-  }
-  .bar { height: 100%; border-radius: 4px; transition: width 0.3s ease; }
-  #playerBar .bar { background: linear-gradient(90deg, #ff4d6d, #ff8fa3); }
-  #enemyBar  .bar { background: linear-gradient(90deg, #a855f7, #d8b4fe); }
+.preview {
+  width: 74px; height: 74px; border-radius: 14px;
+  border: 2px solid rgba(255,255,255,0.2);
+  background: rgba(255,255,255,0.05);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.8rem; cursor: pointer; overflow: hidden;
+  transition: border-color 0.2s;
+  position: relative;
+}
+.preview:hover { border-color: rgba(255,255,255,0.45); }
+.preview img {
+  position: absolute; inset: 0;
+  width: 100%; height: 100%; object-fit: cover;
+  display: none;
+}
+.preview img.loaded { display: block; }
 
-  /* ── Canvas ── */
-  #canvas {
-    position: relative; z-index: 10;
-    display: block;
-    border-radius: 16px;
-    border: 1px solid rgba(255,255,255,0.08);
-    box-shadow: 0 0 40px rgba(168,85,247,0.15);
-    max-width: 100%;
-  }
+.pick-label {
+  font-size: 0.75rem; color: #ccc; cursor: pointer;
+  padding: 6px 14px; border-radius: 8px;
+  border: 1px solid rgba(255,255,255,0.2);
+  background: rgba(255,255,255,0.07);
+  transition: background 0.2s;
+}
+.pick-label:hover { background: rgba(255,255,255,0.15); }
+input[type=file] { display: none; }
 
-  /* ── Touch controls ── */
-  #controls {
-    position: relative; z-index: 10;
-    display: grid;
-    grid-template-columns: repeat(3, 52px);
-    grid-template-rows: repeat(2, 52px);
-    gap: 6px;
-    margin: 4px auto 0;
-  }
-  .ctrl {
-    width: 52px; height: 52px;
-    background: rgba(255,255,255,0.1);
-    border: 1px solid rgba(255,255,255,0.2);
-    border-radius: 12px;
-    color: #fff; font-size: 1.3rem;
-    cursor: pointer;
-    display: flex; align-items: center; justify-content: center;
-    user-select: none;
-    transition: background 0.1s;
-    -webkit-tap-highlight-color: transparent;
-  }
-  .ctrl:active, .ctrl.pressed { background: rgba(255,255,255,0.28); }
-  #btnUp    { grid-column: 2; grid-row: 1; }
-  #btnLeft  { grid-column: 1; grid-row: 2; }
-  #btnDown  { grid-column: 2; grid-row: 2; }
-  #btnRight { grid-column: 3; grid-row: 2; }
+#startBtn {
+  padding: 14px 44px;
+  background: linear-gradient(135deg, #ff4d6d, #a855f7);
+  border: none; border-radius: 16px;
+  color: #fff; font-size: 1.05rem; font-weight: 700;
+  cursor: pointer; letter-spacing: 0.05em;
+  box-shadow: 0 4px 24px rgba(168,85,247,0.5);
+  transition: transform 0.15s;
+}
+#startBtn:hover { transform: scale(1.05); }
 
-  #shootRow {
-    position: relative; z-index: 10;
-    display: flex; justify-content: center; margin-top: 4px;
-  }
-  #btnShoot {
-    width: 90px; height: 44px; border-radius: 22px;
-    background: linear-gradient(135deg, #ff4d6d88, #a855f788);
-    border: 1px solid rgba(255,255,255,0.3);
-    color: #fff; font-size: 1.1rem; cursor: pointer;
-    display: flex; align-items: center; justify-content: center; gap: 5px;
-    -webkit-tap-highlight-color: transparent;
-    transition: background 0.1s;
-  }
-  #btnShoot:active, #btnShoot.pressed {
-    background: linear-gradient(135deg, #ff4d6dcc, #a855f7cc);
-  }
+/* Game wrapper */
+#game {
+  display: none; position: fixed; inset: 0; z-index: 10;
+  flex-direction: column; align-items: center;
+}
+#game.show { display: flex; }
 
-  /* ── Game Over overlay ── */
-  #gameOver {
-    display: none;
-    position: fixed; inset: 0; z-index: 60;
-    background: rgba(0,0,0,0.82);
-    backdrop-filter: blur(8px);
-    flex-direction: column; align-items: center; justify-content: center; gap: 20px;
-  }
-  #gameOver.show { display: flex; }
-  #goTitle {
-    font-size: clamp(2rem, 8vw, 3.5rem); font-weight: 800;
-    text-align: center;
-  }
-  #goTitle.win  { color: #a855f7; text-shadow: 0 0 30px #a855f755; }
-  #goTitle.lose { color: #ff4d6d; text-shadow: 0 0 30px #ff4d6d55; }
-  #goSub { color: #aaa; font-size: 0.9rem; }
-  #restartBtn {
-    padding: 12px 36px;
-    background: rgba(255,255,255,0.12);
-    border: 1px solid rgba(255,255,255,0.25);
-    border-radius: 12px; color: #fff; font-size: 0.95rem;
-    cursor: pointer; transition: background 0.2s;
-  }
-  #restartBtn:hover { background: rgba(255,255,255,0.22); }
+/* HUD */
+#hud {
+  width: 100%; max-width: 500px;
+  display: flex; gap: 8px;
+  padding: 8px 10px 4px; flex-shrink: 0;
+}
+.stat {
+  flex: 1;
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 10px; padding: 5px 10px;
+}
+.stat-label { font-size: 0.58rem; text-transform: uppercase; letter-spacing: 0.1em; color: #888; margin-bottom: 3px; }
+.bar-bg { height: 7px; background: rgba(255,255,255,0.08); border-radius: 4px; overflow: hidden; }
+.bar { height: 100%; border-radius: 4px; transition: width 0.25s; }
+#pBar { background: linear-gradient(90deg,#ff4d6d,#ff8fa3); }
+#eBar { background: linear-gradient(90deg,#a855f7,#d8b4fe); }
 
-  /* hide file inputs */
-  input[type=file] { display: none; }
+/* Canvas */
+#canvas {
+  display: block;
+  border-radius: 14px;
+  border: 1px solid rgba(255,255,255,0.07);
+  box-shadow: 0 0 40px rgba(168,85,247,0.12);
+  flex-shrink: 0;
+  max-width: 100%;
+}
+
+/* Touch controls */
+#touchArea {
+  width: 100%; max-width: 500px;
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 20px 12px;
+  gap: 10px;
+}
+
+/* Joystick */
+#joystickWrap {
+  position: relative;
+  width: 116px; height: 116px; flex-shrink: 0;
+}
+#joystickBase {
+  position: absolute; inset: 0;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.06);
+  border: 2px solid rgba(255,255,255,0.14);
+}
+#joystickKnob {
+  position: absolute;
+  width: 48px; height: 48px; border-radius: 50%;
+  background: rgba(255,255,255,0.2);
+  border: 2px solid rgba(255,255,255,0.38);
+  top: 50%; left: 50%;
+  transform: translate(-50%,-50%);
+  box-shadow: 0 0 12px rgba(255,255,255,0.1);
+}
+
+/* Shoot button */
+#btnShoot {
+  width: 84px; height: 84px; border-radius: 50%;
+  background: radial-gradient(circle, rgba(255,77,109,0.6), rgba(168,85,247,0.4));
+  border: 2px solid rgba(255,100,120,0.5);
+  color: #fff; font-size: 1.6rem;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; flex-shrink: 0;
+  transition: transform 0.08s;
+  -webkit-tap-highlight-color: transparent;
+  box-shadow: 0 0 24px rgba(255,77,109,0.35);
+}
+#btnShoot:active, #btnShoot.pressed {
+  transform: scale(0.9);
+  background: radial-gradient(circle, rgba(255,77,109,0.85), rgba(168,85,247,0.7));
+}
+
+/* Controls hint */
+#hint {
+  position: absolute; bottom: 4px; left: 50%; transform: translateX(-50%);
+  font-size: 0.6rem; color: rgba(255,255,255,0.2); white-space: nowrap;
+  pointer-events: none;
+}
+
+/* Game Over */
+#gameOver {
+  display: none; position: fixed; inset: 0; z-index: 60;
+  background: rgba(0,0,0,0.86); backdrop-filter: blur(10px);
+  flex-direction: column; align-items: center; justify-content: center; gap: 18px;
+}
+#gameOver.show { display: flex; }
+#goTitle {
+  font-size: clamp(2rem,9vw,3.8rem); font-weight: 800; text-align: center;
+}
+#goTitle.win  { color: #a855f7; text-shadow: 0 0 40px #a855f755; }
+#goTitle.lose { color: #ff4d6d; text-shadow: 0 0 40px #ff4d6d55; }
+#goSub { color: #aaa; font-size: 0.9rem; }
+#restartBtn {
+  padding: 12px 38px;
+  background: rgba(255,255,255,0.1);
+  border: 1px solid rgba(255,255,255,0.25);
+  border-radius: 12px; color: #fff; font-size: 0.95rem;
+  cursor: pointer; transition: background 0.2s;
+}
+#restartBtn:hover { background: rgba(255,255,255,0.2); }
 </style>
 </head>
 <body>
-
 <div id="bg"></div>
 <div id="stars"></div>
 
-<!-- Setup Screen -->
+<!-- SETUP -->
 <div id="setup">
   <h1>❤️ Galaxy Clash</h1>
   <p>Elige imágenes para tu personaje y el enemigo, ¡luego a combatir!</p>
-
-  <div style="display:flex;gap:24px;flex-wrap:wrap;justify-content:center">
-    <div class="img-picker">
-      <label>🧑 Jugador</label>
-      <img id="prevPlayer" class="preview" src="" alt="">
-      <button class="pick-btn" onclick="document.getElementById('filePlayer').click()">
-        📁 Seleccionar imagen
-      </button>
+  <div class="pickers">
+    <div class="picker">
+      <span>🧑 Jugador</span>
+      <div class="preview" id="prevPlayer" onclick="document.getElementById('filePlayer').click()">
+        🧑<img id="imgPlayerEl" alt="">
+      </div>
+      <label class="pick-label" for="filePlayer">📁 Elegir imagen</label>
       <input type="file" id="filePlayer" accept="image/*">
     </div>
-    <div class="img-picker">
-      <label>👾 Enemigo</label>
-      <img id="prevEnemy" class="preview" src="" alt="">
-      <button class="pick-btn" onclick="document.getElementById('fileEnemy').click()">
-        📁 Seleccionar imagen
-      </button>
+    <div class="picker">
+      <span>👾 Enemigo</span>
+      <div class="preview" id="prevEnemy" onclick="document.getElementById('fileEnemy').click()">
+        👾<img id="imgEnemyEl" alt="">
+      </div>
+      <label class="pick-label" for="fileEnemy">📁 Elegir imagen</label>
       <input type="file" id="fileEnemy" accept="image/*">
     </div>
   </div>
-
   <button id="startBtn">🚀 ¡Jugar!</button>
 </div>
 
-<!-- HUD -->
-<div id="ui">
+<!-- GAME -->
+<div id="game">
   <div id="hud">
-    <div class="stat" id="playerBar">
-      <span class="stat-label">❤️ Jugador</span>
-      <div class="bar-wrap"><div class="bar" id="pBar" style="width:100%"></div></div>
+    <div class="stat">
+      <div class="stat-label">❤️ Jugador</div>
+      <div class="bar-bg"><div class="bar" id="pBar" style="width:100%"></div></div>
     </div>
-    <div class="stat" id="enemyBar">
-      <span class="stat-label">💀 Enemigo</span>
-      <div class="bar-wrap"><div class="bar" id="eBar" style="width:100%"></div></div>
+    <div class="stat">
+      <div class="stat-label">💀 Enemigo</div>
+      <div class="bar-bg"><div class="bar" id="eBar" style="width:100%"></div></div>
     </div>
   </div>
+
+  <canvas id="canvas"></canvas>
+
+  <div id="touchArea">
+    <div id="joystickWrap">
+      <div id="joystickBase"></div>
+      <div id="joystickKnob"></div>
+    </div>
+    <button id="btnShoot">❤️</button>
+  </div>
+
+  <div id="hint">PC: WASD / flechas + Espacio</div>
 </div>
 
-<!-- Canvas -->
-<canvas id="canvas"></canvas>
+<!-- GAME OVER -->
+<div id="gameOver">
+  <div id="goTitle"></div>
+  <div id="goSub"></div>
+  <button id="restartBtn">🔄 Reiniciar</button>
+</div>
 
-<!-- Touch Controls -->
-<div id="controls">
-  <button class="ctrl" id="btnUp">▲</button>
-  <button class="ctrl" id="btnLeft">◀</button>
-  <button class="ctrl" id="btnDown">▼</button>
-  <button class="ctrl" id="btnRight">▶</button>
+<script>
+// ============================================================
+//  IMAGE LOADING
+// ============================================================
+let imgPlayer = null, imgEnemy = null;
+
+function bindFile(inputId, imgElId, cb) {
+  document.getElementById(inputId).addEventListener('change', e => {
+    const f = e.target.files[0];
+    if (!f) return;
+    const url = URL.createObjectURL(f);
+    const img = new Image();
+    img.onload = () => {
+      const el = document.getElementById(imgElId);
+      el.src = url;
+      el.classList.add('loaded');
+      el.parentElement.childNodes[0].textContent = ''; // hide emoji
+      cb(img);
+    };
+    img.src = url;
+  });
+}
+bindFile('filePlayer', 'imgPlayerEl', img => imgPlayer = img);
+bindFile('fileEnemy',  'imgEnemyEl',  img => imgEnemy  = img);
+
+document.getElementById('startBtn').addEventListener('click', () => {
+  document.getElementById('setup').style.display = 'none';
+  document.getElementById('game').classList.add('show');
+  initGame();
+});
+
+// ============================================================
+//  CANVAS
+// ============================================================
+const canvas = document.getElementById('canvas');
+const ctx    = canvas.getContext('2d');
+let W, H;
+
+function resize() {
+  const vw     = Math.min(window.innerWidth, 500);
+  const hudH   = 46;
+  const ctrlH  = 140;
+  const hintH  = 20;
+  const avail  = window.innerHeight - hudH - ctrlH - hintH - 4;
+  W = vw;
+  H = Math.min(Math.round(vw * 0.62), Math.max(avail, 160));
+  canvas.width  = W;
+  canvas.height = H;
+  canvas.style.width  = W + 'px';
+  canvas.style.height = H + 'px';
+}
+
+window.addEventListener('resize', resize);
+
+// ============================================================
+//  CONSTANTS
+// ============================================================
+const TILE       = 40;
+const P_SPD      = 3.2;
+const P_HP       = 6;
+const E_HP       = 10;
+const P_SHOOT_CD = 320;   // ms
+const E_SHOOT_CD = 1300;  // ms
+
+// ============================================================
+//  STATE
+// ============================================================
+let player, enemy, pBullets, eBullets;
+let pShootCd, eShootCd;
+let gameState, running, animId, lastTs;
+
+function initGame() {
+  resize();
+  player = {
+    x: W / 2 - TILE / 2,
+    y: H - TILE - 6,
+    w: TILE, h: TILE,
+    hp: P_HP, maxHp: P_HP,
+    iframes: 0
+  };
+  enemy = {
+    x: W / 2 - TILE / 2,
+    y: 8,
+    w: TILE, h: TILE,
+    hp: E_HP, maxHp: E_HP,
+    iframes: 0,
+    vx: 1.6, vy: 0,
+    dirTimer: 0
+  };
+  pBullets  = [];
+  eBullets  = [];
+  pShootCd  = 0;
+  eShootCd  = 800; // first shot delay
+  gameState = 'playing';
+  running   = true;
+  lastTs    = 0;
+  updateBars();
+  if (animId) cancelAnimationFrame(animId);
+  animId = requestAnimationFrame(loop);
+}
+
+// ============================================================
+//  KEYBOARD
+// ============================================================
+const keys = {};
+window.addEventListener('keydown', e => { keys[e.code] = true; e.preventDefault(); });
+window.addEventListener('keyup',   e => { keys[e.code] = false; });
+
+// ============================================================
+//  JOYSTICK (virtual thumbstick)
+// ============================================================
+const jWrap = document.getElementById('joystickWrap');
+const jKnob = document.getElementById('joystickKnob');
+const JR    = 58;  // outer radius from center
+const KR    = 24;  // knob radius
+let jActive = false, jTouchId = -1;
+let jdx = 0, jdy = 0;
+
+jWrap.addEventListener('touchstart', e => {
+  e.preventDefault();
+  const t = e.changedTouches[0];
+  jTouchId = t.identifier;
+  jActive  = true;
+  moveJoystick(t);
+}, { passive: false });
+
+jWrap.addEventListener('touchmove', e => {
+  e.preventDefault();
+  for (const t of e.changedTouches) {
+    if (t.identifier === jTouchId) moveJoystick(t);
+  }
+}, { passive: false });
+
+function endJoystick(e) {
+  e.preventDefault();
+  for (const t of e.changedTouches) {
+    if (t.identifier === jTouchId) resetJoystick();
+  }
+}
+jWrap.addEventListener('touchend',    endJoystick, { passive: false });
+jWrap.addEventListener('touchcancel', endJoystick, { passive: false });
+
+function moveJoystick(touch) {
+  const rect = jWrap.getBoundingClientRect();
+  const cx   = rect.left + rect.width  / 2;
+  const cy   = rect.top  + rect.height / 2;
+  const dx   = touch.clientX - cx;
+  const dy   = touch.clientY - cy;
+  const dist = Math.hypot(dx, dy);
+  const max  = JR - KR;
+  const clamp = Math.min(dist, max);
+  const ang   = Math.atan2(dy, dx);
+  const kx    = Math.cos(ang) * clamp;
+  const ky    = Math.sin(ang) * clamp;
+  jKnob.style.transform = `translate(calc(-50% + ${kx}px), calc(-50% + ${ky}px))`;
+  jdx = kx / max;
+  jdy = ky / max;
+}
+
+function resetJoystick() {
+  jActive = false; jTouchId = -1; jdx = 0; jdy = 0;
+  jKnob.style.transform = 'translate(-50%,-50%)';
+}
+
+// ============================================================
+//  SHOOT BUTTON
+// ============================================================
+let shootPressed = false;
+const shootBtn = document.getElementById('btnShoot');
+
+shootBtn.addEventListener('touchstart', e => {
+  e.preventDefault();
+  shootPressed = true;
+  shootBtn.classList.add('pressed');
+}, { passive: false });
+
+function releaseShoot(e) {
+  e.preventDefault();
+  shootPressed = false;
+  shootBtn.classList.remove('pressed');
+}
+shootBtn.addEventListener('touchend',    releaseShoot, { passive: false });
+shootBtn.addEventListener('touchcancel', releaseShoot, { passive: false });
+
+// ============================================================
+//  COLLISION (AABB)
+// ============================================================
+function hits(ax, ay, aw, ah, bx, by, bw, bh) {
+  return ax < bx + bw && ax + aw > bx &&
+         ay < by + bh && ay + ah > by;
+}
+
+// ============================================================
+//  UPDATE
+// ============================================================
+function update(ts, dt) {
+  if (gameState !== 'playing' || dt > 200) return;
+
+  // -- Player movement
+  let pdx = 0, pdy = 0;
+  if (keys['KeyW'] || keys['ArrowUp'])    pdy = -1;
+  if (keys['KeyS'] || keys['ArrowDown'])  pdy =  1;
+  if (keys['KeyA'] || keys['ArrowLeft'])  pdx = -1;
+  if (keys['KeyD'] || keys['ArrowRight']) pdx =  1;
+
+  // Joystick overrides keyboard
+  if (jActive) { pdx = jdx; pdy = jdy; }
+  else if (pdx !== 0 && pdy !== 0) { pdx *= 0.707; pdy *= 0.707; }
+
+  player.x = Math.max(0, Math.min(W - player.w, player.x + pdx * P_SPD));
+  player.y = Math.max(0, Math.min(H - player.h, player.y + pdy * P_SPD));
+  if (player.iframes > 0) player.iframes -= dt;
+
+  // -- Player shoots upward
+  pShootCd -= dt;
+  if (pShootCd <= 0 && (keys['Space'] || shootPressed)) {
+    pShootCd = P_SHOOT_CD;
+    pBullets.push({
+      x: player.x + player.w / 2 - 9,
+      y: player.y - 2,
+      w: 18, h: 18,
+      vy: -7
+    });
+  }
+
+  // -- Move player bullets
+  for (let i = pBullets.length - 1; i >= 0; i--) {
+    const b = pBullets[i];
+    b.y += b.vy;
+
+    // Off screen?
+    if (b.y + b.h < 0) { pBullets.splice(i, 1); continue; }
+
+    // ------- HIT ENEMY CHECK -------
+    // Use bullet's own position and size, compared to enemy's rect
+    if (hits(b.x, b.y, b.w, b.h,
+             enemy.x, enemy.y, enemy.w, enemy.h)) {
+      pBullets.splice(i, 1);
+      if (enemy.iframes <= 0) {
+        enemy.hp = Math.max(0, enemy.hp - 1);
+        enemy.iframes = 500;
+        updateBars();
+        if (enemy.hp <= 0) { endGame('win'); return; }
+      }
+    }
+  }
+
+  // -- Enemy AI: patrols top zone, changes direction randomly
+  enemy.dirTimer -= dt;
+  if (enemy.dirTimer <= 0) {
+    const targetX  = 20 + Math.random() * (W - TILE - 40);
+    const dx       = targetX - enemy.x;
+    const spd      = 1.4 + Math.random() * 0.8;
+    enemy.vx       = (dx === 0 ? 1 : Math.sign(dx)) * spd;
+    // Occasional brief dive downward
+    enemy.vy       = Math.random() < 0.3 ? 1.0 + Math.random() * 0.6 : 0;
+    enemy.dirTimer = 600 + Math.random() * 1000;
+  }
+
+  enemy.x += enemy.vx;
+  enemy.y += enemy.vy;
+
+  // Keep enemy in upper 40% of arena
+  const maxEY = H * 0.38;
+  if (enemy.x < 0)               { enemy.x = 0;          enemy.vx = Math.abs(enemy.vx); }
+  if (enemy.x + enemy.w > W)     { enemy.x = W - enemy.w; enemy.vx = -Math.abs(enemy.vx); }
+  if (enemy.y < 0)               { enemy.y = 0;          enemy.vy = Math.abs(enemy.vy); }
+  if (enemy.y > maxEY)           { enemy.y = maxEY;      enemy.vy = -Math.abs(enemy.vy); }
+
+  if (enemy.iframes > 0) enemy.iframes -= dt;
+
+  // -- Enemy shoots aimed projectiles downward toward player
+  eShootCd -= dt;
+  if (eShootCd <= 0) {
+    eShootCd = E_SHOOT_CD;
+    const ex  = enemy.x + enemy.w / 2;
+    const ey  = enemy.y + enemy.h;
+    const px  = player.x + player.w / 2;
+    const py  = player.y;
+    const ang = Math.atan2(py - ey, px - ex);
+    const spd = 4.2;
+    eBullets.push({
+      x: ex - 9, y: ey,
+      w: 18, h: 18,
+      vx: Math.cos(ang) * spd,
+      vy: Math.sin(ang) * spd
+    });
+  }
+
+  // -- Move enemy bullets
+  for (let i = eBullets.length - 1; i >= 0; i--) {
+    const b = eBullets[i];
+    b.x += b.vx;
+    b.y += b.vy;
+
+    if (b.y > H + 20 || b.x < -20 || b.x > W + 20) {
+      eBullets.splice(i, 1); continue;
+    }
+
+    // Hit player?
+    if (player.iframes <= 0 &&
+        hits(b.x, b.y, b.w, b.h,
+             player.x, player.y, player.w, player.h)) {
+      eBullets.splice(i, 1);
+      player.hp = Math.max(0, player.hp - 1);
+      player.iframes = 750;
+      updateBars();
+      if (player.hp <= 0) { endGame('lose'); return; }
+    }
+  }
+
+  // -- Body collision: enemy touches player
+  if (player.iframes <= 0 &&
+      hits(player.x, player.y, player.w, player.h,
+           enemy.x, enemy.y, enemy.w, enemy.h)) {
+    player.hp = Math.max(0, player.hp - 1);
+    player.iframes = 900;
+    updateBars();
+    if (player.hp <= 0) { endGame('lose'); return; }
+  }
+}
+
+// ============================================================
+//  DRAW
+// ============================================================
+function drawEntity(ent, img, isHit, glowColor) {
+  ctx.save();
+  if (isHit && Math.floor(Date.now() / 75) % 2 === 0) {
+    ctx.globalAlpha = 0.28;
+  }
+  ctx.shadowBlur  = 20;
+  ctx.shadowColor = glowColor;
+  ctx.beginPath();
+  ctx.roundRect(ent.x, ent.y, ent.w, ent.h, 8);
+  ctx.clip();
+  if (img) {
+    ctx.drawImage(img, ent.x, ent.y, ent.w, ent.h);
+  } else {
+    ctx.fillStyle = glowColor;
+    ctx.fillRect(ent.x, ent.y, ent.w, ent.h);
+  }
+  ctx.r  <button class="ctrl" id="btnRight">▶</button>
 </div>
 <div id="shootRow">
   <button id="btnShoot">❤️ Disparar</button>
