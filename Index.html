@@ -1,0 +1,589 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>❤️ Galaxy Clash</title>
+<style>
+  /* ── Reset & Base ── */
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --hp-color: #ff4d6d;
+    --en-color: #a855f7;
+    --btn-bg: rgba(255,255,255,0.1);
+    --btn-border: rgba(255,255,255,0.25);
+    --font: 'Segoe UI', sans-serif;
+  }
+
+  body {
+    background: #000;
+    color: #fff;
+    font-family: var(--font);
+    overflow: hidden;
+    touch-action: none;
+    height: 100dvh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  /* ── Galaxy background ── */
+  #bg {
+    position: fixed;
+    inset: 0;
+    background:
+      radial-gradient(ellipse at 20% 50%, #1a0533 0%, transparent 60%),
+      radial-gradient(ellipse at 80% 20%, #0a1a3e 0%, transparent 55%),
+      radial-gradient(ellipse at 60% 80%, #0d0a2e 0%, transparent 50%),
+      #000;
+    z-index: 0;
+  }
+  /* Starfield via box-shadow trick */
+  #stars { position: fixed; inset: 0; z-index: 0; }
+  #stars::before, #stars::after {
+    content: '';
+    position: absolute;
+    width: 2px; height: 2px;
+    border-radius: 50%;
+    background: transparent;
+    /* 80 stars each layer */
+    box-shadow:
+      12px 45px #fff,  87px 234px #fff, 145px 67px #ddd,  300px 190px #fff,
+      420px 310px #ccc, 560px 55px #fff, 680px 420px #ddd, 750px 130px #fff,
+      830px 280px #ccc, 920px 370px #fff, 50px 500px #ddd,  200px 600px #fff,
+      370px 450px #ccc, 490px 580px #fff, 620px 490px #ddd, 780px 560px #fff,
+      100px 150px #ddd, 250px 380px #fff, 400px 220px #ccc, 550px 340px #fff,
+      700px 90px #ddd,  850px 450px #fff, 960px 200px #ccc, 30px 700px #fff,
+      170px 750px #ddd, 320px 680px #fff, 470px 730px #ccc, 600px 650px #fff,
+      740px 720px #ddd, 890px 680px #fff, 130px 820px #ccc, 280px 880px #fff,
+      430px 830px #ddd, 580px 790px #fff, 730px 860px #ccc, 880px 820px #fff,
+      55px 320px #ddd,  210px 270px #fff, 360px 130px #ccc, 510px 400px #fff,
+      660px 260px #ddd, 810px 170px #fff, 940px 480px #ccc, 75px 610px #fff,
+      225px 540px #ddd, 375px 570px #fff, 525px 510px #ccc, 675px 590px #fff,
+      825px 530px #ddd, 975px 610px #fff, 45px 900px #ccc,  195px 940px #fff,
+      345px 910px #ddd, 495px 950px #fff, 645px 920px #ccc, 795px 960px #fff,
+      945px 900px #ddd, 115px 100px #fff, 265px 50px #ccc,  415px 170px #fff,
+      565px 80px #ddd,  715px 200px #fff, 865px 120px #ccc, 985px 260px #fff,
+      20px 400px #ddd,  170px 460px #fff, 330px 390px #ccc, 480px 440px #fff,
+      630px 360px #ddd, 790px 410px #fff, 950px 350px #ccc, 105px 690px #fff,
+      255px 740px #ddd, 405px 660px #fff, 555px 710px #ccc, 705px 670px #fff;
+    animation: twinkle 4s infinite alternate;
+  }
+  #stars::after {
+    width: 1px; height: 1px;
+    box-shadow:
+      80px 120px #aaa,  230px 80px #bbb,  380px 200px #aaa, 530px 140px #bbb,
+      680px 60px #aaa,  820px 240px #bbb,  965px 100px #aaa, 35px 360px #bbb,
+      185px 320px #aaa, 335px 420px #bbb,  485px 270px #aaa, 635px 380px #bbb,
+      785px 330px #aaa, 935px 410px #bbb,  60px 560px #aaa,  210px 620px #bbb,
+      360px 500px #aaa, 510px 640px #bbb,  660px 570px #aaa, 810px 590px #bbb,
+      960px 540px #aaa, 40px 780px #bbb,   190px 840px #aaa, 340px 760px #bbb,
+      490px 800px #aaa, 640px 770px #bbb,  790px 830px #aaa, 940px 790px #bbb,
+      110px 30px #aaa,  260px 160px #bbb,  410px 20px #aaa,  560px 100px #bbb,
+      710px 180px #aaa, 860px 40px #bbb,   15px 240px #aaa,  165px 200px #bbb,
+      315px 280px #aaa, 465px 160px #bbb,  615px 300px #aaa, 765px 220px #bbb;
+    animation-delay: 2s;
+  }
+  @keyframes twinkle { from { opacity: 0.4 } to { opacity: 1 } }
+
+  /* ── Layout ── */
+  #ui {
+    position: relative; z-index: 10;
+    width: 100%; max-width: 520px;
+    padding: 8px 12px 0;
+    display: flex; flex-direction: column; gap: 6px;
+  }
+
+  /* ── Setup screen ── */
+  #setup {
+    position: fixed; inset: 0; z-index: 50;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    gap: 18px;
+    background: rgba(0,0,0,0.85);
+    backdrop-filter: blur(6px);
+  }
+  #setup h1 {
+    font-size: clamp(1.8rem, 6vw, 2.8rem);
+    letter-spacing: 0.05em;
+    background: linear-gradient(135deg, #ff4d6d, #a855f7, #38bdf8);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    text-align: center;
+  }
+  #setup p { color: #aaa; font-size: 0.85rem; text-align: center; max-width: 280px; }
+
+  .img-picker {
+    display: flex; flex-direction: column; align-items: center; gap: 8px;
+    width: 220px;
+  }
+  .img-picker label {
+    font-size: 0.75rem; color: #aaa; text-transform: uppercase; letter-spacing: 0.1em;
+  }
+  .pick-btn {
+    width: 100%; padding: 10px;
+    background: var(--btn-bg);
+    border: 1px solid var(--btn-border);
+    border-radius: 10px;
+    color: #fff; font-size: 0.85rem; cursor: pointer;
+    transition: background 0.2s;
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+  }
+  .pick-btn:hover { background: rgba(255,255,255,0.18); }
+  .preview {
+    width: 70px; height: 70px; border-radius: 12px;
+    object-fit: cover;
+    border: 2px solid var(--btn-border);
+    display: none;
+  }
+  .preview.show { display: block; }
+
+  #startBtn {
+    padding: 14px 40px;
+    background: linear-gradient(135deg, #ff4d6d, #a855f7);
+    border: none; border-radius: 14px;
+    color: #fff; font-size: 1rem; font-weight: 700;
+    cursor: pointer; letter-spacing: 0.05em;
+    box-shadow: 0 4px 20px rgba(168,85,247,0.4);
+    transition: transform 0.1s, box-shadow 0.2s;
+  }
+  #startBtn:hover { transform: scale(1.04); box-shadow: 0 6px 28px rgba(168,85,247,0.55); }
+
+  /* ── HUD ── */
+  #hud {
+    display: flex; justify-content: space-between; align-items: center;
+    gap: 8px;
+  }
+  .stat {
+    flex: 1;
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 10px;
+    padding: 6px 10px;
+    display: flex; flex-direction: column; gap: 3px;
+  }
+  .stat-label { font-size: 0.6rem; text-transform: uppercase; letter-spacing: 0.12em; color: #888; }
+  .bar-wrap {
+    height: 8px; background: rgba(255,255,255,0.08); border-radius: 4px; overflow: hidden;
+  }
+  .bar { height: 100%; border-radius: 4px; transition: width 0.3s ease; }
+  #playerBar .bar { background: linear-gradient(90deg, #ff4d6d, #ff8fa3); }
+  #enemyBar  .bar { background: linear-gradient(90deg, #a855f7, #d8b4fe); }
+
+  /* ── Canvas ── */
+  #canvas {
+    position: relative; z-index: 10;
+    display: block;
+    border-radius: 16px;
+    border: 1px solid rgba(255,255,255,0.08);
+    box-shadow: 0 0 40px rgba(168,85,247,0.15);
+    max-width: 100%;
+  }
+
+  /* ── Touch controls ── */
+  #controls {
+    position: relative; z-index: 10;
+    display: grid;
+    grid-template-columns: repeat(3, 52px);
+    grid-template-rows: repeat(2, 52px);
+    gap: 6px;
+    margin: 4px auto 0;
+  }
+  .ctrl {
+    width: 52px; height: 52px;
+    background: rgba(255,255,255,0.1);
+    border: 1px solid rgba(255,255,255,0.2);
+    border-radius: 12px;
+    color: #fff; font-size: 1.3rem;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    user-select: none;
+    transition: background 0.1s;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .ctrl:active, .ctrl.pressed { background: rgba(255,255,255,0.28); }
+  #btnUp    { grid-column: 2; grid-row: 1; }
+  #btnLeft  { grid-column: 1; grid-row: 2; }
+  #btnDown  { grid-column: 2; grid-row: 2; }
+  #btnRight { grid-column: 3; grid-row: 2; }
+
+  #shootRow {
+    position: relative; z-index: 10;
+    display: flex; justify-content: center; margin-top: 4px;
+  }
+  #btnShoot {
+    width: 90px; height: 44px; border-radius: 22px;
+    background: linear-gradient(135deg, #ff4d6d88, #a855f788);
+    border: 1px solid rgba(255,255,255,0.3);
+    color: #fff; font-size: 1.1rem; cursor: pointer;
+    display: flex; align-items: center; justify-content: center; gap: 5px;
+    -webkit-tap-highlight-color: transparent;
+    transition: background 0.1s;
+  }
+  #btnShoot:active, #btnShoot.pressed {
+    background: linear-gradient(135deg, #ff4d6dcc, #a855f7cc);
+  }
+
+  /* ── Game Over overlay ── */
+  #gameOver {
+    display: none;
+    position: fixed; inset: 0; z-index: 60;
+    background: rgba(0,0,0,0.82);
+    backdrop-filter: blur(8px);
+    flex-direction: column; align-items: center; justify-content: center; gap: 20px;
+  }
+  #gameOver.show { display: flex; }
+  #goTitle {
+    font-size: clamp(2rem, 8vw, 3.5rem); font-weight: 800;
+    text-align: center;
+  }
+  #goTitle.win  { color: #a855f7; text-shadow: 0 0 30px #a855f755; }
+  #goTitle.lose { color: #ff4d6d; text-shadow: 0 0 30px #ff4d6d55; }
+  #goSub { color: #aaa; font-size: 0.9rem; }
+  #restartBtn {
+    padding: 12px 36px;
+    background: rgba(255,255,255,0.12);
+    border: 1px solid rgba(255,255,255,0.25);
+    border-radius: 12px; color: #fff; font-size: 0.95rem;
+    cursor: pointer; transition: background 0.2s;
+  }
+  #restartBtn:hover { background: rgba(255,255,255,0.22); }
+
+  /* hide file inputs */
+  input[type=file] { display: none; }
+</style>
+</head>
+<body>
+
+<div id="bg"></div>
+<div id="stars"></div>
+
+<!-- Setup Screen -->
+<div id="setup">
+  <h1>❤️ Galaxy Clash</h1>
+  <p>Elige imágenes para tu personaje y el enemigo, ¡luego a combatir!</p>
+
+  <div style="display:flex;gap:24px;flex-wrap:wrap;justify-content:center">
+    <div class="img-picker">
+      <label>🧑 Jugador</label>
+      <img id="prevPlayer" class="preview" src="" alt="">
+      <button class="pick-btn" onclick="document.getElementById('filePlayer').click()">
+        📁 Seleccionar imagen
+      </button>
+      <input type="file" id="filePlayer" accept="image/*">
+    </div>
+    <div class="img-picker">
+      <label>👾 Enemigo</label>
+      <img id="prevEnemy" class="preview" src="" alt="">
+      <button class="pick-btn" onclick="document.getElementById('fileEnemy').click()">
+        📁 Seleccionar imagen
+      </button>
+      <input type="file" id="fileEnemy" accept="image/*">
+    </div>
+  </div>
+
+  <button id="startBtn">🚀 ¡Jugar!</button>
+</div>
+
+<!-- HUD -->
+<div id="ui">
+  <div id="hud">
+    <div class="stat" id="playerBar">
+      <span class="stat-label">❤️ Jugador</span>
+      <div class="bar-wrap"><div class="bar" id="pBar" style="width:100%"></div></div>
+    </div>
+    <div class="stat" id="enemyBar">
+      <span class="stat-label">💀 Enemigo</span>
+      <div class="bar-wrap"><div class="bar" id="eBar" style="width:100%"></div></div>
+    </div>
+  </div>
+</div>
+
+<!-- Canvas -->
+<canvas id="canvas"></canvas>
+
+<!-- Touch Controls -->
+<div id="controls">
+  <button class="ctrl" id="btnUp">▲</button>
+  <button class="ctrl" id="btnLeft">◀</button>
+  <button class="ctrl" id="btnDown">▼</button>
+  <button class="ctrl" id="btnRight">▶</button>
+</div>
+<div id="shootRow">
+  <button id="btnShoot">❤️ Disparar</button>
+</div>
+
+<!-- Game Over -->
+<div id="gameOver">
+  <div id="goTitle"></div>
+  <div id="goSub"></div>
+  <button id="restartBtn">🔄 Reiniciar</button>
+</div>
+
+<script>
+// ─── Image loading ───────────────────────────────────────────────
+const filePlayer = document.getElementById('filePlayer');
+const fileEnemy  = document.getElementById('fileEnemy');
+const prevPlayer = document.getElementById('prevPlayer');
+const prevEnemy  = document.getElementById('prevEnemy');
+
+let imgPlayer = null, imgEnemy = null;
+
+function loadImg(file, preview, cb) {
+  const url = URL.createObjectURL(file);
+  const img = new Image();
+  img.onload = () => { preview.src = url; preview.classList.add('show'); cb(img); };
+  img.src = url;
+}
+filePlayer.addEventListener('change', e => {
+  if (e.target.files[0]) loadImg(e.target.files[0], prevPlayer, img => imgPlayer = img);
+});
+fileEnemy.addEventListener('change', e => {
+  if (e.target.files[0]) loadImg(e.target.files[0], prevEnemy, img => imgEnemy = img);
+});
+
+// ─── Start button ────────────────────────────────────────────────
+document.getElementById('startBtn').addEventListener('click', () => {
+  document.getElementById('setup').style.display = 'none';
+  initGame();
+});
+
+// ─── Canvas setup ────────────────────────────────────────────────
+const canvas = document.getElementById('canvas');
+const ctx    = canvas.getContext('2d');
+
+const MAX_W = 480, TILE = 42;
+let W, H, running = false, animId;
+
+function resize() {
+  const vw = Math.min(window.innerWidth - 16, MAX_W);
+  W = vw; H = Math.round(vw * 0.72);
+  canvas.width  = W;
+  canvas.height = H;
+}
+resize();
+window.addEventListener('resize', () => { resize(); });
+
+// ─── Game state ──────────────────────────────────────────────────
+const PLAYER_HP = 5, ENEMY_HP = 8, SPEED = 3, SHOOT_CD = 350;
+let player, enemy, bullets, lastShoot, gameState;
+
+function initGame() {
+  resize();
+  const sz = TILE;
+  player = { x: 40, y: H/2 - sz/2, w: sz, h: sz, hp: PLAYER_HP, maxHp: PLAYER_HP,
+             iframes: 0, dx: 0, dy: 0 };
+  enemy  = { x: W - 80, y: H/2 - sz/2, w: sz, h: sz, hp: ENEMY_HP, maxHp: ENEMY_HP,
+             iframes: 0, vx: 1.2, vy: 0.8, timer: 0 };
+  bullets = [];
+  lastShoot = 0;
+  gameState = 'playing';
+  updateBars();
+  running = true;
+  if (animId) cancelAnimationFrame(animId);
+  loop();
+}
+
+// ─── Controls ────────────────────────────────────────────────────
+const keys = {};
+window.addEventListener('keydown', e => keys[e.code] = true);
+window.addEventListener('keyup',   e => keys[e.code] = false);
+
+// Touch buttons
+function bindTouch(id, code) {
+  const el = document.getElementById(id);
+  el.addEventListener('pointerdown', e => { e.preventDefault(); keys[code] = true; el.classList.add('pressed'); });
+  el.addEventListener('pointerup',   e => { e.preventDefault(); keys[code] = false; el.classList.remove('pressed'); });
+  el.addEventListener('pointerleave',e => { keys[code] = false; el.classList.remove('pressed'); });
+}
+bindTouch('btnUp',    'ArrowUp');
+bindTouch('btnDown',  'ArrowDown');
+bindTouch('btnLeft',  'ArrowLeft');
+bindTouch('btnRight', 'ArrowRight');
+
+const shootBtn = document.getElementById('btnShoot');
+shootBtn.addEventListener('pointerdown', e => { e.preventDefault(); keys['Space'] = true; shootBtn.classList.add('pressed'); });
+shootBtn.addEventListener('pointerup',   e => { e.preventDefault(); keys['Space'] = false; shootBtn.classList.remove('pressed'); });
+shootBtn.addEventListener('pointerleave',e => { keys['Space'] = false; shootBtn.classList.remove('pressed'); });
+
+// ─── Enemy AI ────────────────────────────────────────────────────
+function updateEnemy(dt) {
+  enemy.timer -= dt;
+  if (enemy.timer <= 0) {
+    // Occasionally chase player, otherwise bounce randomly
+    if (Math.random() < 0.6) {
+      const ang = Math.atan2((player.y - enemy.y), (player.x - enemy.x));
+      enemy.vx = Math.cos(ang) * 1.6;
+      enemy.vy = Math.sin(ang) * 1.6;
+    } else {
+      const a = Math.random() * Math.PI * 2;
+      enemy.vx = Math.cos(a) * 1.6;
+      enemy.vy = Math.sin(a) * 1.6;
+    }
+    enemy.timer = 600 + Math.random() * 800;
+  }
+  enemy.x += enemy.vx;
+  enemy.y += enemy.vy;
+  // Bounce off walls
+  if (enemy.x < 0) { enemy.x = 0; enemy.vx *= -1; }
+  if (enemy.x + enemy.w > W) { enemy.x = W - enemy.w; enemy.vx *= -1; }
+  if (enemy.y < 0) { enemy.y = 0; enemy.vy *= -1; }
+  if (enemy.y + enemy.h > H) { enemy.y = H - enemy.h; enemy.vy *= -1; }
+  if (enemy.iframes > 0) enemy.iframes -= dt;
+}
+
+// ─── Physics & logic ─────────────────────────────────────────────
+function update(ts, dt) {
+  if (gameState !== 'playing') return;
+
+  // ── Player movement
+  let pdx = 0, pdy = 0;
+  if (keys['KeyW'] || keys['ArrowUp'])    pdy = -SPEED;
+  if (keys['KeyS'] || keys['ArrowDown'])  pdy =  SPEED;
+  if (keys['KeyA'] || keys['ArrowLeft'])  pdx = -SPEED;
+  if (keys['KeyD'] || keys['ArrowRight']) pdx =  SPEED;
+  // Normalize diagonal
+  if (pdx && pdy) { pdx *= 0.707; pdy *= 0.707; }
+  player.x = Math.max(0, Math.min(W - player.w, player.x + pdx));
+  player.y = Math.max(0, Math.min(H - player.h, player.y + pdy));
+  if (player.iframes > 0) player.iframes -= dt;
+
+  // ── Shoot
+  if ((keys['Space']) && ts - lastShoot > SHOOT_CD) {
+    lastShoot = ts;
+    bullets.push({ x: player.x + player.w, y: player.y + player.h/2 - 8,
+                   vx: 7, vy: 0, alive: true });
+  }
+
+  // ── Bullets
+  for (let b of bullets) {
+    b.x += b.vx;
+    if (b.x > W) { b.alive = false; continue; }
+    // Hit enemy
+    if (b.alive && rectsOverlap(b, {x:b.x,y:b.y,w:20,h:20}, enemy)) {
+      b.alive = false;
+      if (enemy.iframes <= 0) {
+        enemy.hp--;
+        enemy.iframes = 500;
+        updateBars();
+        if (enemy.hp <= 0) endGame('win');
+      }
+    }
+  }
+  bullets = bullets.filter(b => b.alive);
+
+  // ── Enemy AI
+  updateEnemy(dt);
+
+  // ── Player-enemy collision
+  if (player.iframes <= 0 && rectsOverlap(player, player, enemy)) {
+    player.hp--;
+    player.iframes = 800;
+    updateBars();
+    if (player.hp <= 0) endGame('lose');
+  }
+}
+
+function rectsOverlap(a, _unused, b) {
+  // Simple AABB — use actual positions
+  return a.x < b.x + b.w &&
+         a.x + a.w > b.x &&
+         a.y < b.y + b.h &&
+         a.y + a.h > b.y;
+}
+
+// ─── Rendering ───────────────────────────────────────────────────
+function drawEntity(ent, img, flash) {
+  ctx.save();
+  if (flash && Math.floor(Date.now() / 80) % 2 === 0) {
+    ctx.globalAlpha = 0.35;
+  }
+  ctx.shadowBlur = 16;
+  ctx.shadowColor = img ? 'rgba(255,255,255,0.3)' : '#a855f7';
+  ctx.beginPath();
+  ctx.roundRect(ent.x, ent.y, ent.w, ent.h, 8);
+  ctx.clip();
+  if (img) {
+    ctx.drawImage(img, ent.x, ent.y, ent.w, ent.h);
+  } else {
+    ctx.fillStyle = '#a855f7';
+    ctx.fillRect(ent.x, ent.y, ent.w, ent.h);
+  }
+  ctx.restore();
+}
+
+function draw() {
+  ctx.clearRect(0, 0, W, H);
+
+  // Subtle arena gradient
+  const grad = ctx.createRadialGradient(W/2, H/2, 0, W/2, H/2, W*0.7);
+  grad.addColorStop(0, 'rgba(20,5,50,0.6)');
+  grad.addColorStop(1, 'rgba(0,0,0,0)');
+  ctx.fillStyle = grad;
+  ctx.fillRect(0, 0, W, H);
+
+  // Bullets (hearts)
+  ctx.font = '18px serif';
+  ctx.textBaseline = 'middle';
+  for (let b of bullets) ctx.fillText('❤️', b.x, b.y + 10);
+
+  // Player
+  drawEntity(player, imgPlayer, player.iframes > 0);
+
+  // Enemy
+  drawEntity(enemy, imgEnemy, enemy.iframes > 0);
+
+  // HP pips
+  ctx.font = '11px serif';
+  for (let i = 0; i < player.maxHp; i++) {
+    ctx.fillText(i < player.hp ? '❤️' : '🖤', player.x + i*14, player.y - 10);
+  }
+  for (let i = 0; i < enemy.maxHp; i++) {
+    ctx.fillText(i < enemy.hp ? '💜' : '🖤',  enemy.x  + i*10, enemy.y  - 10);
+  }
+}
+
+// ─── Loop ────────────────────────────────────────────────────────
+let lastTs = 0;
+function loop(ts = 0) {
+  const dt = ts - lastTs;
+  lastTs = ts;
+  update(ts, dt);
+  draw();
+  if (running) animId = requestAnimationFrame(loop);
+}
+
+// ─── HUD bars ────────────────────────────────────────────────────
+function updateBars() {
+  document.getElementById('pBar').style.width = (player.hp / player.maxHp * 100) + '%';
+  document.getElementById('eBar').style.width = (enemy.hp  / enemy.maxHp  * 100) + '%';
+}
+
+// ─── Game Over ───────────────────────────────────────────────────
+function endGame(result) {
+  gameState = result;
+  running = false;
+  cancelAnimationFrame(animId);
+  const ov   = document.getElementById('gameOver');
+  const title = document.getElementById('goTitle');
+  const sub   = document.getElementById('goSub');
+  if (result === 'win') {
+    title.textContent = '🎉 ¡Victoria!';
+    title.className = 'win';
+    sub.textContent = 'Derrotaste al enemigo 💪';
+  } else {
+    title.textContent = '💀 ¡Derrota!';
+    title.className = 'lose';
+    sub.textContent = 'El enemigo te venció… ¡inténtalo de nuevo!';
+  }
+  ov.classList.add('show');
+}
+
+document.getElementById('restartBtn').addEventListener('click', () => {
+  document.getElementById('gameOver').classList.remove('show');
+  initGame();
+});
+</script>
+</body>
+  </html>
+  
